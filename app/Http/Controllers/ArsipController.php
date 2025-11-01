@@ -10,11 +10,42 @@ use Illuminate\Support\Facades\Storage;
 
 class ArsipController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $arsip = Arsip::with(['kategori', 'prodi'])->latest()->paginate(10);
-        return view('page.arsip.index', compact('arsip'));
+        $query = Arsip::with(['kategori', 'prodi'])->latest();
+
+        if ($search = $request->search) {
+            $query->where('judul_dokumen', 'like', "%{$search}%")
+                ->orWhereHas('kategori', function ($q) use ($search) {
+                    $q->where('nama_kategori', 'like', "%{$search}%");
+                })
+                ->orWhereHas('prodi', function ($q) use ($search) {
+                    $q->where('nama_prodi', 'like', "%{$search}%");
+                });
+        }
+
+        $arsip = $query->paginate(20);
+        $kategori = KategoriArsip::all();
+        $prodi = Prodi::with('fakultas')->get();
+
+        if ($request->ajax()) {
+            // return data JSON untuk live search
+            $results = $arsip->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'judul_dokumen' => $item->judul_dokumen,
+                    'kategori' => $item->kategori->nama_kategori ?? null,
+                    'prodi' => $item->prodi->nama_prodi ?? null,
+                ];
+            });
+            return response()->json($results);
+        }
+
+        return view('page.arsip.index', compact('arsip', 'kategori', 'prodi'));
     }
+
+
+
 
     public function create()
     {
@@ -40,7 +71,7 @@ class ArsipController extends Controller
 
         if ($request->hasFile('file_dokumen')) {
             $file = $request->file('file_dokumen');
-            $filename = time().'_'.$file->getClientOriginalName();
+            $filename = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('public/arsip', $filename);
             $data['file_dokumen'] = $filename;
         }
@@ -49,13 +80,6 @@ class ArsipController extends Controller
         return redirect()->route('arsip.index')->with('success', 'Data arsip berhasil ditambahkan.');
     }
 
-    public function edit($id)
-    {
-        $arsip = Arsip::findOrFail($id);
-        $kategori = KategoriArsip::all();
-        $prodi = Prodi::with('fakultas')->get();
-        return view('page.arsip.edit', compact('arsip', 'kategori', 'prodi'));
-    }
 
     public function update(Request $request, $id)
     {
@@ -79,7 +103,7 @@ class ArsipController extends Controller
                 Storage::delete('public/arsip/' . $arsip->file_dokumen);
             }
             $file = $request->file('file_dokumen');
-            $filename = time().'_'.$file->getClientOriginalName();
+            $filename = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('public/arsip', $filename);
             $data['file_dokumen'] = $filename;
         }
@@ -93,5 +117,21 @@ class ArsipController extends Controller
         $arsip = Arsip::findOrFail($id);
         $arsip->delete();
         return redirect()->route('arsip.index')->with('success', 'Data arsip berhasil dihapus.');
+    }
+
+    public function deleteSelected(Request $request)
+    {
+        $ids = $request->selected_dosen;
+        if ($ids) {
+            $dosens = Arsip::whereIn('id', $ids)->get();
+            foreach ($dosens as $d) {
+                if ($d->file_dokumen && file_exists(public_path('storage/dokumen_dosen/' . $d->file_dokumen))) {
+                    unlink(public_path('storage/dokumen_dosen/' . $d->file_dokumen));
+                }
+            }
+            Arsip::whereIn('id', $ids)->delete();
+        }
+
+        return redirect()->route('dosen.index')->with('success', 'Data dosen terpilih berhasil dihapus.');
     }
 }

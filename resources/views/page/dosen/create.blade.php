@@ -31,7 +31,7 @@
                     <select name="id_prodi" class="w-full border rounded px-3 py-2" required>
                         <option value="">-- Pilih Prodi --</option>
                         @foreach ($prodi as $p)
-                            <option value="{{ $p->id_prodi }}">
+                            <option value="{{ $p->id }}">
                                 {{ $p->nama_prodi }} ({{ $p->fakultas->nama_fakultas }})
                             </option>
                         @endforeach

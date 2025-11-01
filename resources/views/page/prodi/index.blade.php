@@ -29,6 +29,15 @@
             box-shadow: 0 0.2em 0.7em -0.3em #0740bb;
             transform: translateY(1px);
         }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 
     <div class="p-6">
@@ -43,105 +52,116 @@
             </button>
         </div>
 
-        <table class="w-full border">
-            <thead class="bg-gray-600 text-white">
-                <tr>
-                    <th class="border px-3 py-2 text-left">No</th>
-                    <th class="border px-3 py-2 text-left">Nama Prodi</th>
-                    <th class="border px-3 py-2 text-left">Fakultas</th>
-                    <th class="border px-3 py-2 text-left">Jenjang</th>
-                    <th class="border px-3 py-2 text-left">Deskripsi</th>
-                    <th class="border px-3 py-2 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($prodi as $index => $p)
+        <div class="table-wrapper border border-gray-200 rounded-lg">
+            <table class="w-full border text-sm">
+                <thead class="bg-gray-600 text-white">
                     <tr>
-                        <td class="border px-3 py-2">{{ $index + $prodi->firstItem() }}</td>
-                        <td class="border px-3 py-2">{{ $p->nama_prodi }}</td>
-                        <td class="border px-3 py-2">{{ $p->fakultas->nama_fakultas ?? '-' }}</td>
-                        <td class="border px-3 py-2">{{ $p->jenjang }}</td>
-                        <td class="border px-3 py-2">{{ $p->deskripsi }}</td>
-                        <td class="border px-3 py-2">
-                            <div class="flex items-center justify-center gap-2" x-data="{ openModal: false }">
-                                <!-- Tombol Edit -->
-                                <button @click="openModal = true"
-                                    class="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-full transition"
-                                    title="Edit">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                    </svg>
-                                </button>
-
-                                <!-- Tombol Hapus -->
-                                <form action="{{ route('prodi.destroy', $p->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button"
-                                        class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-full transition btn-delete"
-                                        title="Hapus">
+                        <th class="border px-3 py-2 text-left">No</th>
+                        <th class="border px-3 py-2 text-left">Nama Prodi</th>
+                        <th class="border px-3 py-2 text-left">Fakultas</th>
+                        <th class="border px-3 py-2 text-left">Jenjang</th>
+                        <th class="border px-3 py-2 text-left">Deskripsi</th>
+                        <th class="border px-3 py-2 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($prodi as $index => $p)
+                        <tr>
+                            <td class="border px-3 py-2">{{ $index + $prodi->firstItem() }}</td>
+                            <td class="border px-3 py-2">{{ $p->nama_prodi }}</td>
+                            <td class="border px-3 py-2">{{ $p->fakultas->nama_fakultas ?? '-' }}</td>
+                            <td class="border px-3 py-2">{{ $p->jenjang }}</td>
+                            <td class="border px-3 py-2">{{ $p->deskripsi }}</td>
+                            <td class="border px-3 py-2">
+                                <div class="flex items-center justify-center gap-2" x-data="{ openModal: false }">
+                                    <!-- Tombol Edit -->
+                                    <button @click="openModal = true"
+                                        class="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-full transition"
+                                        title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3m-9 0h12" />
+                                                d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
                                         </svg>
                                     </button>
-                                </form>
 
-                                <!-- Modal Edit -->
-                                <div x-show="openModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                    <div @click.away="openModal = false" class="bg-white rounded-lg w-full max-w-md p-6">
-                                        <h2 class="text-lg font-semibold mb-4">Edit Program Studi</h2>
-                                        <form action="{{ route('prodi.update', $p->id) }}" method="POST">
-                                            @csrf
-                                            @method('PUT')
+                                    <!-- Tombol Hapus -->
+                                    <form action="{{ route('prodi.destroy', $p->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button"
+                                            class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-full transition btn-delete"
+                                            title="Hapus">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3m-9 0h12" />
+                                            </svg>
+                                        </button>
+                                    </form>
 
-                                            <div class="mb-4">
-                                                <label class="block font-medium mb-1">Fakultas</label>
-                                                <select name="id_fakultas" class="w-full border rounded px-3 py-2" required>
-                                                    @foreach ($fakultas as $f)
-                                                        <option value="{{ $f->id_fakultas }}" {{ $p->id_fakultas == $f->id_fakultas ? 'selected' : '' }}>
-                                                            {{ $f->nama_fakultas }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                    <!-- Modal Edit -->
+                                    <div x-show="openModal"
+                                        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                        <div @click.away="openModal = false"
+                                            class="bg-white rounded-lg w-full max-w-md p-6">
+                                            <h2 class="text-lg font-semibold mb-4">Edit Program Studi</h2>
+                                            <form action="{{ route('prodi.update', $p->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
 
-                                            <div class="mb-4">
-                                                <label class="block font-medium mb-1">Nama Program Studi</label>
-                                                <input type="text" name="nama_prodi" value="{{ $p->nama_prodi }}" class="w-full border rounded px-3 py-2" required>
-                                            </div>
+                                                <div class="mb-4">
+                                                    <label class="block font-medium mb-1">Fakultas</label>
+                                                    <select name="id_fakultas" class="w-full border rounded px-3 py-2"
+                                                        required>
+                                                        @foreach ($fakultas as $f)
+                                                            <option value="{{ $f->id_fakultas }}"
+                                                                {{ $p->id_fakultas == $f->id_fakultas ? 'selected' : '' }}>
+                                                                {{ $f->nama_fakultas }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
 
-                                            <div class="mb-4">
-                                                <label class="block font-medium mb-1">Jenjang</label>
-                                                <input type="text" name="jenjang" value="{{ $p->jenjang }}" class="w-full border rounded px-3 py-2">
-                                            </div>
+                                                <div class="mb-4">
+                                                    <label class="block font-medium mb-1">Nama Program Studi</label>
+                                                    <input type="text" name="nama_prodi"
+                                                        value="{{ $p->nama_prodi }}"
+                                                        class="w-full border rounded px-3 py-2" required>
+                                                </div>
 
-                                            <div class="mb-4">
-                                                <label class="block font-medium mb-1">Deskripsi</label>
-                                                <textarea name="deskripsi" rows="3" class="w-full border rounded px-3 py-2">{{ $p->deskripsi }}</textarea>
-                                            </div>
+                                                <div class="mb-4">
+                                                    <label class="block font-medium mb-1">Jenjang</label>
+                                                    <input type="text" name="jenjang" value="{{ $p->jenjang }}"
+                                                        class="w-full border rounded px-3 py-2">
+                                                </div>
 
-                                            <div class="flex justify-end space-x-2">
-                                                <button type="button" @click="openModal = false" class="bg-red-500 text-white px-4 py-2 rounded">Batal</button>
-                                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Update</button>
-                                            </div>
-                                        </form>
+                                                <div class="mb-4">
+                                                    <label class="block font-medium mb-1">Deskripsi</label>
+                                                    <textarea name="deskripsi" rows="3" class="w-full border rounded px-3 py-2">{{ $p->deskripsi }}</textarea>
+                                                </div>
+
+                                                <div class="flex justify-end space-x-2">
+                                                    <button type="button" @click="openModal = false"
+                                                        class="bg-red-500 text-white px-4 py-2 rounded">Batal</button>
+                                                    <button type="submit"
+                                                        class="bg-blue-600 text-white px-4 py-2 rounded">Update</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
+                                    <!-- End Modal -->
                                 </div>
-                                <!-- End Modal -->
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center py-3">Belum ada data program studi.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-3">Belum ada data program studi.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         <div class="mt-4">{{ $prodi->links() }}</div>
     </div>

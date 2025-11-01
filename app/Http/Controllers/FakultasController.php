@@ -7,11 +7,20 @@ use Illuminate\Http\Request;
 
 class FakultasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $fakultas = Fakultas::latest()->paginate(10);
+         $query = Fakultas::query();
+
+        if ($search = $request->search) {
+            $query->where('nama_fakultas', 'like', "%{$search}%")
+                ->orWhere('dekan', 'like', "%{$search}%");
+        }
+
+        $fakultas = $query->latest()->paginate(20); // <--- pakai $query, bukan Fakultas::latest()
+
         return view('page.fakultas.index', compact('fakultas'));
     }
+
 
     public function create()
     {

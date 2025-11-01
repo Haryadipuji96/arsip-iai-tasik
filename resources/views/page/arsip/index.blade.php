@@ -1,51 +1,148 @@
 <x-app-layout>
+    <style>
+        .cssbuttons-io-button {
+            display: flex;
+            align-items: center;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 0.4em 0.8em;
+            color: white;
+            background: #2563eb;
+            border: none;
+            letter-spacing: 0.05em;
+            border-radius: 15em;
+            transition: all 0.2s;
+        }
+
+        .cssbuttons-io-button svg {
+            margin-right: 4px;
+            fill: white;
+        }
+
+        .cssbuttons-io-button:hover {
+            box-shadow: 0 0.4em 1em -0.3em #0740bb;
+        }
+
+        .cssbuttons-io-button:active {
+            box-shadow: 0 0.2em 0.7em -0.3em #0740bb;
+            transform: translateY(1px);
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* =======================
+           Highlight Animasi
+        ======================= */
+        .highlight {
+            background-color: #fde68a;
+            /* kuning lembut */
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 0 2px;
+            animation: fadeGlow 1.2s ease-out;
+        }
+
+        @keyframes fadeGlow {
+            0% {
+                background-color: #facc15;
+                /* kuning terang */
+                box-shadow: 0 0 8px #facc15;
+            }
+
+            50% {
+                background-color: #fde68a;
+                box-shadow: 0 0 5px #fde68a;
+            }
+
+            100% {
+                background-color: #fde68a;
+                box-shadow: none;
+            }
+        }
+    </style>
     <div class="p-6">
         <!-- Header -->
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-xl font-semibold">Data Arsip</h1>
-            <a href="{{ route('arsip.create') }}"
-               class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-               Tambah Arsip
-            </a>
+            <button onclick="window.location='{{ route('arsip.create') }}'" class="cssbuttons-io-button">
+                <svg height="18" width="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z" fill="currentColor"></path>
+                </svg>
+                <span>Tambah</span>
+            </button>
         </div>
 
-        <!-- Notifikasi -->
-        @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
+        <x-search-bar route="arsip.index" placeholder="Cari judul / kategori / prodi..." />
+
+        <button id="delete-selected"
+            class="px-3 py-1.5 text-sm rounded-full font-medium text-white bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed mb-4"
+            disabled>
+            <span>Hapus Terpilih</span>
+        </button>
 
         <!-- Tabel Arsip -->
-        <table class="w-full border text-sm">
-            <thead class="bg-green-600 text-white">
-                <tr>
-                    <th class="border px-3 py-2 text-center w-12">No</th>
-                    <th class="border px-3 py-2 text-left">Judul Dokumen</th>
-                    <th class="border px-3 py-2 text-left">Nomor Dokumen</th>
-                    <th class="border px-3 py-2 text-left">Tanggal</th>
-                    <th class="border px-3 py-2 text-left">Tahun</th>
-                    <th class="border px-3 py-2 text-left">Kategori</th>
-                    <th class="border px-3 py-2 text-left">Program Studi</th>
-                    <th class="border px-3 py-2 text-left">Keterangan</th>
-                    <th class="border px-3 py-2 text-center">File</th>
-                    <th class="border px-3 py-2 text-center w-32">Aksi</th>
-                </tr>
-            </thead>
+        <div class="table-wrapper border border-gray-200 rounded-lg">
+            <table class="w-full border text-sm">
+                <thead class="bg-gray-600 text-white">
+                    <tr>
+                        <th class="px-4 py-2 border text-center w-12" rowspan="2">
+                            <input type="checkbox" id="select-all">
+                        </th>
+                        <th class="border px-3 py-2 text-center w-12">No</th>
+                        <th class="border px-3 py-2 text-left">Judul Dokumen</th>
+                        <th class="border px-3 py-2 text-left">Nomor Dokumen</th>
+                        <th class="border px-3 py-2 text-left">Tanggal</th>
+                        <th class="border px-3 py-2 text-left">Tahun</th>
+                        <th class="border px-3 py-2 text-left">Kategori</th>
+                        <th class="border px-3 py-2 text-left">Program Studi</th>
+                        <th class="border px-3 py-2 text-left">Keterangan</th>
+                        <th class="border px-3 py-2 text-center">File</th>
+                        <th class="border px-3 py-2 text-center w-32">Aksi</th>
+                    </tr>
+                </thead>
+                @php
+                    function highlight($text, $search)
+                    {
+                        if (!$search) {
+                            return e($text);
+                        }
+                        // Hanya ini yang diganti:
+                        return preg_replace(
+                            '/(' . preg_quote($search, '/') . ')/i',
+                            '<span class="highlight">$1</span>',
+                            e($text),
+                        );
+                    }
+                @endphp
+                <tbody>
+                    @forelse ($arsip as $index => $a)
+                        <tr class="hover:bg-gray-50">
+                            <td class="border px-3 py-2 text-center">
+                                <input type="checkbox" class="select-item" name="selected_dosen[]"
+                                    value="{{ $a->id }}">
+                            </td>
+                            <td class="border px-3 py-2 text-center">{{ $index + $arsip->firstItem() }}</td>
+                            <td class="border px-3 py-2">{!! highlight($a->judul_dokumen, request('search')) !!}</td>
+                            <td class="border px-3 py-2">{{ $a->nomor_dokumen ?? '-' }}</td>
+                            <td class="border px-3 py-2">
+                                {{ $a->tanggal_dokumen ? \Carbon\Carbon::parse($a->tanggal_dokumen)->format('d-m-Y') : '-' }}
+                            </td>
+                            <td class="border px-3 py-2 text-center">{{ $a->tahun ?? '-' }}</td>
+                            <td class="border px-3 py-2">{!! highlight($a->kategori->nama_kategori ?? '-', request('search')) !!}</td>
+                            <td class="border px- 3py-2">{!! highlight($a->prodi->nama_prodi ?? '-', request('search')) !!}</td>
+                            <td class="border px-3 py-2">{{ $a->keterangan ?? '-' }}</td>
 
-            <tbody>
-                @forelse ($arsip as $index => $a)
-                    <tr class="hover:bg-gray-50">
-                        <td class="border px-3 py-2 text-center">{{ $index + $arsip->firstItem() }}</td>
-                        <td class="border px-3 py-2">{{ $a->judul_dokumen ?? '-' }}</td>
-                        <td class="border px-3 py-2">{{ $a->nomor_dokumen ?? '-' }}</td>
-                        <td class="border px-3 py-2">{{ $a->tanggal_dokumen ? \Carbon\Carbon::parse($a->tanggal_dokumen)->format('d-m-Y') : '-' }}</td>
-                        <td class="border px-3 py-2 text-center">{{ $a->tahun ?? '-' }}</td>
-                        <td class="border px-3 py-2">{{ $a->kategori->nama_kategori ?? '-' }}</td>
-                        <td class="border px-3 py-2">{{ $a->prodi->nama_prodi ?? '-' }}</td>
-                        <td class="border px-3 py-2">{{ $a->keterangan ?? '-' }}</td>
-
-                        <td class="border px-4 py-2 text-center">
+                            <td class="border px-4 py-2 text-center">
                                 @if ($a->file_dokumen)
                                     <a href="{{ asset('storage/dokumen_dosen/' . $a->file_dokumen) }}" target="_blank"
                                         class="inline-flex items-center text-blue-600 hover:text-blue-800 underline">
@@ -60,36 +157,276 @@
                                     <span class="text-gray-500 italic">-</span>
                                 @endif
                             </td>
+                            <td class="border px-3 py-2 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <div x-data="{ openModal: false }">
+                                        <!-- Tombol Edit -->
+                                        <button @click="openModal = true"
+                                            class="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-full transition"
+                                            title="Edit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                            </svg>
+                                        </button>
+
+                                        <form action="{{ route('arsip.destroy', $a->id) }}" method="POST"
+                                            class="inline delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button"
+                                                class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-full transition btn-delete"
+                                                title="Hapus">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3m-9 0h12" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <!-- Modal Edit -->
+                                        <div x-show="openModal" x-cloak
+                                            class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                                            <div @click.away="openModal = false"
+                                                class="relative bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 mx-4 overflow-y-auto max-h-[90vh]">
+                                                <button @click="openModal = false"
+                                                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
+                                                <h1
+                                                    class="text-xl font-semibold mb-5 text-gray-800 border-b pb-2 text-start">
+                                                    Edit Data Arsip
+                                                </h1>
+
+                                                <form action="{{ route('arsip.update', $a->id) }}" method="POST"
+                                                    enctype="multipart/form-data">
+                                                    @csrf
+                                                    @method('PUT')
+
+                                                    {{-- Kategori Arsip --}}
+                                                    <div class="mb-4">
+                                                        <label class="block font-medium mb-1 text-start">Kategori
+                                                            Arsip</label>
+                                                        <select name="id_kategori"
+                                                            class="w-full border rounded px-3 py-2" required>
+                                                            @foreach ($kategori as $k)
+                                                                <option value="{{ $k->id }}"
+                                                                    {{ $k->id == $a->id_kategori ? 'selected' : '' }}>
+                                                                    {{ $k->nama_kategori }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    {{-- Prodi --}}
+                                                    <div class="mb-4">
+                                                        <label class="block font-medium mb-1 text-start">Program
+                                                            Studi</label>
+                                                        <select name="id_prodi"
+                                                            class="w-full border rounded px-3 py-2">
+                                                            <option value="">-- Pilih Prodi --</option>
+                                                            @foreach ($prodi as $p)
+                                                                <option value="{{ $p->id }}"
+                                                                    {{ $p->id == $a->id_prodi ? 'selected' : '' }}>
+                                                                    {{ $p->nama_prodi }}
+                                                                    ({{ $p->fakultas->nama_fakultas }})
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
 
 
-                        <!-- Aksi -->
-                        <td class="border px-3 py-2 text-center space-x-2">
-                            <a href="{{ route('arsip.edit', $a->id) }}"
-                               class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
 
-                            <form action="{{ route('arsip.destroy', $a->id) }}" method="POST"
-                                  class="inline-block"
-                                  onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="11" class="text-center py-3 text-gray-600">Belum ada data arsip.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                                                    {{-- Judul --}}
+                                                    <div class="mb-4">
+                                                        <label class="block font-medium mb-1 text-start">Judul
+                                                            Dokumen</label>
+                                                        <input type="text" name="judul_dokumen"
+                                                            value="{{ $a->judul_dokumen }}"
+                                                            class="w-full border rounded px-3 py-2" required>
+                                                    </div>
+
+                                                    {{-- Nomor & Tanggal --}}
+                                                    <div class="mb-4 grid grid-cols-2 gap-4">
+                                                        <div>
+                                                            <label class="block font-medium mb-1 text-start">Nomor
+                                                                Dokumen</label>
+                                                            <input type="text" name="nomor_dokumen"
+                                                                value="{{ $a->nomor_dokumen }}"
+                                                                class="w-full border rounded px-3 py-2">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block font-medium mb-1 text-start">Tanggal
+                                                                Dokumen</label>
+                                                            <input type="date" name="tanggal_dokumen"
+                                                                value="{{ $a->tanggal_dokumen }}"
+                                                                class="w-full border rounded px-3 py-2">
+                                                        </div>
+                                                    </div>
+
+                                                    {{-- Tahun --}}
+                                                    <div class="mb-4">
+                                                        <label class="block font-medium mb-1 text-start">Tahun</label>
+                                                        <input type="text" name="tahun"
+                                                            value="{{ $a->tahun }}"
+                                                            class="w-full border rounded px-3 py-2">
+                                                    </div>
+
+                                                    {{-- File --}}
+                                                    <div class="mb-4 text-start">
+                                                        <label class="block font-medium mb-1 text-start">File Dokumen
+                                                            Saat
+                                                            Ini</label>
+                                                        @if ($a->file_dokumen)
+                                                            <a href="{{ asset('storage/arsip/' . $a->file_dokumen) }}"
+                                                                target="_blank" class="text-blue-600 underline">
+                                                                {{ $a->file_dokumen }}
+                                                            </a>
+                                                            <p class="text-sm text-gray-500 mt-1">Upload file baru
+                                                                untuk
+                                                                mengganti
+                                                                yang lama.</p>
+                                                        @else
+                                                            <p class="text-gray-500 italic">Belum ada file.</p>
+                                                        @endif
+                                                    </div>
+
+                                                    <div class="mb-4">
+                                                        <label class="block font-medium mb-1 text-start">Upload File
+                                                            Baru
+                                                            (opsional)
+                                                        </label>
+                                                        <input type="file" name="file_dokumen"
+                                                            class="w-full border rounded px-3 py-2"
+                                                            accept=".pdf,.doc,.docx,.jpg,.png">
+                                                    </div>
+
+                                                    {{-- Keterangan --}}
+                                                    <div class="mb-4">
+                                                        <label
+                                                            class="block font-medium mb-1 text-start">Keterangan</label>
+                                                        <textarea name="keterangan" rows="3" class="w-full border rounded px-3 py-2">{{ $a->keterangan }}</textarea>
+                                                    </div>
+
+                                                    {{-- Tombol --}}
+                                                    <div class="flex justify-end space-x-2">
+                                                        <a href="{{ route('arsip.index') }}"
+                                                            class="bg-red-500 text-white px-4 py-2 rounded">Batal</a>
+                                                        <button type="submit"
+                                                            class="bg-blue-600 text-white px-4 py-2 rounded">Update</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="11" class="text-center py-3 text-gray-600">Belum ada data arsip.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         <!-- Pagination -->
         <div class="mt-4">
             {{ $arsip->links() }}
         </div>
     </div>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const form = this.closest('form');
+                    Swal.fire({
+                        title: 'Apakah anda yakin??',
+                        text: "Data yang sudah dihapus tidak bisa di kembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#16a34a',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            @endif
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.select-item');
+            const deleteBtn = document.getElementById('delete-selected');
+
+            // Toggle semua checkbox
+            selectAll.addEventListener('change', function() {
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                toggleDeleteBtn();
+            });
+
+            // Toggle tombol hapus ketika checkbox dipilih
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', toggleDeleteBtn);
+            });
+
+            function toggleDeleteBtn() {
+                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                deleteBtn.disabled = !anyChecked;
+            }
+
+            // Event hapus terpilih
+            deleteBtn.addEventListener('click', function() {
+                const selected = Array.from(checkboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                if (selected.length === 0) return;
+
+                Swal.fire({
+                    title: 'Apakah anda yakin?',
+                    text: "Data yang terpilih akan dihapus!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#16a34a',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = "{{ route('dosen.deleteSelected') }}";
+                        form.innerHTML = `
+                    @csrf
+                    @method('DELETE')
+                    ${selected.map(id => `<input type="hidden" name="selected_dosen[]" value="${id}">`).join('')}
+                `;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+
 </x-app-layout>

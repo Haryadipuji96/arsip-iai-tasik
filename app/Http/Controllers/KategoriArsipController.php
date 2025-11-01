@@ -9,7 +9,7 @@ class KategoriArsipController extends Controller
 {
     public function index()
     {
-        $kategori = KategoriArsip::latest()->paginate(10);
+        $kategori = KategoriArsip::latest()->paginate(20);
         return view('page.kategori_arsip.index', compact('kategori'));
     }
 

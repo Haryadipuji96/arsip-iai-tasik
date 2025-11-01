@@ -65,14 +65,14 @@
                     <!-- Menu -->
                     <div class="hidden sm:flex space-x-4">
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
-                            class="text-white px-3 py-2 rounded-md font-medium transition-none">
+                            class="text-white px-3 py-2 rounded-md font-medium transition-colors hover:bg-blue-500 hover:text-white">
                             {{ __('Dashboard') }}
                         </x-nav-link>
 
                         <!-- Dropdown Master Data -->
                         <div class="relative" x-data="{ openMaster: false }">
                             <button @click="openMaster = !openMaster"
-                                class="flex items-center justify-between w-full text-white px-3 py-2 rounded-md font-medium transition-none focus:outline-none">
+                                class="flex items-center justify-between w-full text-white px-3 py-2 rounded-md font-medium transition-colors hover:bg-blue-500 hover:text-white focus:outline-none">
                                 <span>Master Data</span>
                                 <svg class="w-4 h-4 ml-2 transition-transform duration-200"
                                     :class="{ 'rotate-180': openMaster }" fill="none" stroke="currentColor"
@@ -85,28 +85,31 @@
                             <div x-show="openMaster" @click.away="openMaster = false" x-transition
                                 class="absolute left-0 mt-2 w-48 bg-white text-gray-700 rounded-lg shadow-lg z-50 border border-gray-200">
                                 <a href="{{ route('fakultas.index') }}"
-                                    class="block px-4 py-2 text-sm transition-none">Fakultas</a>
+                                    class="block px-4 py-2 text-sm transition-colors hover:bg-blue-500 hover:text-white rounded">Fakultas</a>
                                 <a href="{{ route('prodi.index') }}"
-                                    class="block px-4 py-2 text-sm transition-none">Program Studi</a>
+                                    class="block px-4 py-2 text-sm transition-colors hover:bg-blue-500 hover:text-white rounded">Program
+                                    Studi</a>
                                 <a href="{{ route('kategori-arsip.index') }}"
-                                    class="block px-4 py-2 text-sm transition-none">Kategori Arsip</a>
+                                    class="block px-4 py-2 text-sm transition-colors hover:bg-blue-500 hover:text-white rounded">Kategori
+                                    Arsip</a>
                                 <a href="{{ route('dosen.index') }}"
-                                    class="block px-4 py-2 text-sm transition-none">Dosen</a>
+                                    class="block px-4 py-2 text-sm transition-colors hover:bg-blue-500 hover:text-white rounded">Dosen</a>
                             </div>
                         </div>
 
+
                         <x-nav-link :href="route('arsip.index')" :active="request()->routeIs('arsip.*')"
-                            class="text-white px-3 py-2 rounded-md font-medium transition-none">
+                            class="text-white px-3 py-2 rounded-md font-medium transition-colors hover:bg-blue-500 hover:text-white">
                             {{ __('Data Arsip') }}
                         </x-nav-link>
 
                         <x-nav-link :href="route('sarpras.index')" :active="request()->routeIs('sarpras.*')"
-                            class="text-white px-3 py-2 rounded-md font-medium transition-none">
+                            class="text-white px-3 py-2 rounded-md font-medium transition-colors hover:bg-blue-500 hover:text-white">
                             {{ __('Data Sarpras') }}
                         </x-nav-link>
 
                         <x-nav-link :href="route('tenaga-pendidik.index')" :active="request()->routeIs('tenaga-pendidik.*')"
-                            class="text-white px-3 py-2 rounded-md font-medium transition-none">
+                            class="text-white px-3 py-2 rounded-md font-medium transition-colors hover:bg-blue-500 hover:text-white">
                             {{ __('Data Tendik') }}
                         </x-nav-link>
                     </div>
@@ -117,7 +120,7 @@
                     <!-- Ikon Setting -->
                     <div class="relative" x-data="{ openSetting: false }">
                         <button @click="openSetting = !openSetting"
-                            class="flex items-center justify-center text-white p-2.5 rounded-lg transition-none focus:outline-none">
+                            class="flex items-center justify-center text-white p-2.5 rounded-lg transition-colors hover:bg-blue-500 hover:text-white focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
@@ -128,17 +131,25 @@
 
                         <div x-show="openSetting" @click.away="openSetting = false" x-transition
                             class="absolute right-0 mt-2 w-56 bg-white text-gray-700 rounded-lg shadow-lg z-50 border border-gray-200">
+
                             <a href="{{ route('users.index') }}"
-                                class="flex items-center px-4 py-2 text-sm transition-none">
+                                class="flex items-center px-4 py-2 text-sm transition-colors hover:bg-blue-500 hover:text-white rounded">
                                 Pengguna
                             </a>
                             <a href="{{ route('userlogin.index') }}"
-                                class="flex items-center px-4 py-2 text-sm transition-none">
+                                class="flex items-center px-4 py-2 text-sm transition-colors hover:bg-blue-500 hover:text-white rounded">
                                 Laporan Aktivitas User
                             </a>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full text-left flex items-center px-4 py-2 text-sm transition-colors hover:bg-blue-500 hover:text-white rounded">
+                                    Logout
+                                </button>
+                            </form>
                         </div>
                     </div>
-
                     <!-- Profile -->
                     <a href="{{ route('profile.edit') }}"
                         class="flex items-center space-x-3 px-3 py-2 rounded-md transition duration-200 ease-in-out transform hover:scale-105 hover:opacity-90 cursor-pointer">

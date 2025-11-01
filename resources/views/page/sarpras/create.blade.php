@@ -4,7 +4,7 @@
             <!-- Header -->
             <div class="flex items-center justify-between mb-6 border-b pb-4">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-green-100 text-green-600 p-2 rounded-full">
+                    <div class="bg-green-100 text-blue-600 p-2 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -31,7 +31,7 @@
                     <select name="id_prodi" class="w-full border rounded px-3 py-2">
                         <option value="">-- Pilih Prodi --</option>
                         @foreach ($prodi as $p)
-                            <option value="{{ $p->id_prodi }}">{{ $p->nama_prodi }} ({{ $p->fakultas->nama_fakultas }})
+                            <option value="{{ $p->id }}">{{ $p->nama_prodi }} ({{ $p->fakultas->nama_fakultas }})
                             </option>
                         @endforeach
                     </select>
@@ -114,8 +114,8 @@
 
                 {{-- Tombol --}}
                 <div class="flex justify-end space-x-2">
-                    <a href="{{ route('sarpras.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</a>
-                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Simpan</button>
+                    <a href="{{ route('sarpras.index') }}" class="bg-red-500 text-white px-4 py-2 rounded">Batal</a>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
                 </div>
             </form>
         </div>

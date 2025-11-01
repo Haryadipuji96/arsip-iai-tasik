@@ -8,11 +8,20 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->paginate(10);
+        $query = User::query();
+
+        // Jika ada parameter 'search', filter berdasarkan nama
+        if ($search = $request->search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $users = $query->latest()->paginate(10)->withQueryString();
+
         return view('page.users.index', compact('users'));
     }
+
 
     public function create()
     {
@@ -40,8 +49,7 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        return view('page.users.edit', compact('user'));
+       //
     }
 
     public function update(Request $request, $id)

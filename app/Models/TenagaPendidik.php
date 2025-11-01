@@ -10,7 +10,7 @@ class TenagaPendidik extends Model
     use HasFactory;
 
     protected $table = 'tenaga_pendidik';
-    protected $primaryKey = 'id_tenaga_pendidik';
+    protected $primaryKey = 'id';
 
     // Semua kolom yang bisa diisi massal
     protected $fillable = [

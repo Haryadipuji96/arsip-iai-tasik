@@ -38,6 +38,36 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
+
+        /* =======================
+           Highlight Animasi
+        ======================= */
+        .highlight {
+            background-color: #fde68a;
+            /* kuning lembut */
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 0 2px;
+            animation: fadeGlow 1.2s ease-out;
+        }
+
+        @keyframes fadeGlow {
+            0% {
+                background-color: #facc15;
+                /* kuning terang */
+                box-shadow: 0 0 8px #facc15;
+            }
+
+            50% {
+                background-color: #fde68a;
+                box-shadow: 0 0 5px #fde68a;
+            }
+
+            100% {
+                background-color: #fde68a;
+                box-shadow: none;
+            }
+        }
     </style>
 
     <div class="p-6">
@@ -52,10 +82,23 @@
             </button>
         </div>
 
+
+        <x-search-bar route="dosen.index" placeholder="Cari nama / prodi / jabatan..." />
+
+        <button id="delete-selected"
+            class="px-3 py-1.5 text-sm rounded-full font-medium text-white bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed mb-4"
+            disabled>
+            <span>Hapus Terpilih</span>
+        </button>
+
+
         <div class="table-wrapper border border-gray-200 rounded-lg">
             <table class="w-full border text-sm">
-                <thead class="bg-gray-400 text-white">
+                <thead class="bg-gray-600 text-white">
                     <tr>
+                        <th class="px-4 py-2 border text-center w-12" rowspan="2">
+                            <input type="checkbox" id="select-all">
+                        </th>
                         <th rowspan="2" class="px-4 py-2 border text-center w-12">No</th>
                         <th rowspan="2" class="border px-4 py-2">Nama</th>
                         <th rowspan="2" class="border px-4 py-2">Prodi</th>
@@ -77,16 +120,34 @@
                         <th class="border px-2 py-1">Bln</th>
                     </tr>
                 </thead>
+                @php
+                    function highlight($text, $search)
+                    {
+                        if (!$search) {
+                            return e($text);
+                        }
+                        // Hanya ini yang diganti:
+                        return preg_replace(
+                            '/(' . preg_quote($search, '/') . ')/i',
+                            '<span class="highlight">$1</span>',
+                            e($text),
+                        );
+                    }
+                @endphp
                 <tbody>
                     @forelse ($dosen as $index => $d)
                         <tr class="hover:bg-gray-50" x-data="{ openModal: false }">
+                            <td class="border px-3 py-2 text-center">
+                                <input type="checkbox" class="select-item" name="selected_dosen[]"
+                                    value="{{ $d->id }}">
+                            </td>
                             <td class="border px-3 py-2 text-center">{{ $index + $dosen->firstItem() }}</td>
-                            <td class="border px-4 py-2">{{ $d->nama ?? '-' }}</td>
-                            <td class="border px-4 py-2">{{ $d->prodi->nama_prodi ?? '-' }}</td>
+                            <td class="border px-4 py-2">{!! highlight($d->nama, request('search')) !!}</td>
+                            <td class="border px-4 py-2">{!! highlight($d->prodi->nama_prodi ?? '-', request('search')) !!}</td>
                             <td class="border px-4 py-2">{{ $d->tempat_lahir ?? '-' }}</td>
                             <td class="border px-4 py-2">{{ $d->nik ?? '-' }}</td>
                             <td class="border px-4 py-2">{{ $d->pendidikan_terakhir ?? '-' }}</td>
-                            <td class="border px-4 py-2">{{ $d->jabatan ?? '-' }}</td>
+                            <td class="border px-4 py-2">{!! highlight($d->jabatan, request('search')) !!}</td>
                             <td class="border px-4 py-2 text-center">{{ $d->tmt_kerja ?? '-' }}</td>
                             <td class="border px-4 py-2 text-center">{{ $d->masa_kerja_tahun ?? 0 }}</td>
                             <td class="border px-4 py-2 text-center">{{ $d->masa_kerja_bulan ?? 0 }}</td>
@@ -108,8 +169,6 @@
                                     <span class="text-gray-500 italic">-</span>
                                 @endif
                             </td>
-
-
                             <td class="border px-3 py-2 text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <button @click="openModal = true"
@@ -317,48 +376,104 @@
                     @endforelse
                 </tbody>
             </table>
-            {{-- @include('components.pagination', ['data' => $dosen]) --}}
         </div>
 
-            <div class="mt-4">
-                {{ $dosen->links() }}
-            </div>
+        <div class="mt-4">
+            {{ $dosen->links() }}
         </div>
+    </div>
 
-        <!-- SweetAlert2 -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const deleteButtons = document.querySelectorAll('.btn-delete');
-                deleteButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        const form = this.closest('form');
-                        Swal.fire({
-                            title: 'Apakah anda yakin??',
-                            text: "Data yang sudah dihapus tidak bisa di kembalikan!",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#16a34a',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Ya, hapus!',
-                            cancelButtonText: 'Batal'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form.submit();
-                            }
-                        });
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const form = this.closest('form');
+                    Swal.fire({
+                        title: 'Apakah anda yakin??',
+                        text: "Data yang sudah dihapus tidak bisa di kembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#16a34a',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
                     });
                 });
-
-                @if (session('success'))
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: "{{ session('success') }}",
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                @endif
             });
-        </script>
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            @endif
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.select-item');
+            const deleteBtn = document.getElementById('delete-selected');
+
+            // Toggle semua checkbox
+            selectAll.addEventListener('change', function() {
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                toggleDeleteBtn();
+            });
+
+            // Toggle tombol hapus ketika checkbox dipilih
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', toggleDeleteBtn);
+            });
+
+            function toggleDeleteBtn() {
+                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                deleteBtn.disabled = !anyChecked;
+            }
+
+            // Event hapus terpilih
+            deleteBtn.addEventListener('click', function() {
+                const selected = Array.from(checkboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                if (selected.length === 0) return;
+
+                Swal.fire({
+                    title: 'Apakah anda yakin?',
+                    text: "Data yang terpilih akan dihapus!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#16a34a',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = "{{ route('dosen.deleteSelected') }}";
+                        form.innerHTML = `
+                    @csrf
+                    @method('DELETE')
+                    ${selected.map(id => `<input type="hidden" name="selected_dosen[]" value="${id}">`).join('')}
+                `;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+
 </x-app-layout>

@@ -1,47 +1,107 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <div class="container">
+        <!-- Logo -->
+        <div class="text-center mb-4">
+            <img src="{{ asset('images/Logo-IAIT.png') }}" alt="Logo SIPANDA" class="mx-auto w-24 h-24">
+        </div>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+        <div class="heading">Login SIPANDA</div>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+        <form method="POST" action="{{ route('login') }}" class="form">
+            @csrf
+
+            <!-- Email -->
+            <input required class="input" type="email" name="email" id="email" placeholder="E-mail" :value="old('email')" autofocus>
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
+            <!-- Password -->
+            <input required class="input" type="password" name="password" id="password" placeholder="Password">
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+            <!-- Confirm Password -->
+            <input required class="input" type="password" name="password_confirmation" id="password_confirmation" placeholder="Confirm Password">
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex justify-between mt-2 items-center text-sm text-gray-600">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="remember" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                    <span class="ml-2">Remember me</span>
+                </label>
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="underline text-blue-600 hover:text-blue-800">Forgot Password?</a>
+                @endif
+            </div>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <!-- Submit Button -->
+            <input class="login-button mt-6" type="submit" value="Login SIPANDA">
+        </form>
+    </div>
+
+    <style>
+        /* Container */
+        .container {
+            max-width: 350px;
+            background: linear-gradient(0deg, #fff 0%, #f4f7fb 100%);
+            border-radius: 40px;
+            padding: 25px 35px;
+            border: 5px solid #fff;
+            box-shadow: rgba(133, 189, 215, 0.88) 0px 30px 30px -20px;
+            margin: 20px auto;
+        }
+
+        /* Heading */
+        .heading {
+            text-align: center;
+            font-weight: 900;
+            font-size: 30px;
+            color: rgb(16, 137, 211);
+            margin-bottom: 20px;
+        }
+
+        /* Form Inputs */
+        .form .input {
+            width: 100%;
+            background: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            box-shadow: #cff0ff 0px 10px 10px -5px;
+            border-inline: 2px solid transparent;
+        }
+
+        .form .input::placeholder {
+            color: rgb(170, 170, 170);
+        }
+
+        .form .input:focus {
+            outline: none;
+            border-inline: 2px solid #12B1D1;
+        }
+
+        /* Login Button */
+        .form .login-button {
+            display: block;
+            width: 100%;
+            font-weight: bold;
+            background: linear-gradient(45deg, rgb(16, 137, 211) 0%, rgb(18, 177, 209) 100%);
+            color: white;
+            padding-block: 15px;
+            margin: 20px auto;
+            border-radius: 20px;
+            box-shadow: rgba(133, 189, 215, 0.88) 0px 20px 10px -15px;
+            border: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form .login-button:hover {
+            transform: scale(1.03);
+            box-shadow: rgba(133, 189, 215, 0.88) 0px 23px 10px -20px;
+        }
+
+        .form .login-button:active {
+            transform: scale(0.95);
+            box-shadow: rgba(133, 189, 215, 0.88) 0px 15px 10px -10px;
+        }
+    </style>
 </x-guest-layout>

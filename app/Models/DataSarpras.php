@@ -10,7 +10,7 @@ class DataSarpras extends Model
     use HasFactory;
 
     protected $table = 'data_sarpras';
-    protected $primaryKey = 'id_data_sarpras';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'id_prodi',

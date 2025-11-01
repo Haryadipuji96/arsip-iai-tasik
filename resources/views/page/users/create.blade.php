@@ -37,8 +37,8 @@
             </div>
 
             <div class="flex justify-end space-x-2">
-                <a href="{{ route('users.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</a>
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Simpan</button>
+                <a href="{{ route('users.index') }}" class="bg-red-500 text-white px-4 py-2 rounded">Batal</a>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
             </div>
         </form>
     </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataSarprasController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\FakultasController;
@@ -15,12 +16,13 @@ use App\Http\Controllers\UserLoginController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
 
 
 Route::middleware(['auth'])->group(function () {
@@ -30,6 +32,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::delete('dosen/delete-selected', [DosenController::class, 'deleteSelected'])->name('dosen.deleteSelected');
+Route::delete('arsip/delete-selected', [ArsipController::class, 'deleteSelected'])->name('arsip.deleteSelected');
+Route::delete('sarpras/delete-selected', [DataSarprasController::class, 'deleteSelected'])->name('sarpras.deleteSelected');
+Route::delete('tenaga-pendidik/delete-selected', [TenagaPendidikController::class, 'deleteSelected'])->name('tenaga-pendidik.deleteSelected');
 
 
 

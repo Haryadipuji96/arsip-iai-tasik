@@ -4,7 +4,7 @@
             <!-- Header -->
             <div class="flex items-center justify-between mb-6 border-b pb-4">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-green-100 text-green-600 p-2 rounded-full">
+                    <div class="bg-green-100 text-blue-600 p-2 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -42,7 +42,7 @@
                     <select name="id_prodi" class="border p-2 rounded w-full">
                         <option value="">-- Pilih Prodi --</option>
                         @foreach ($prodi as $p)
-                            <option value="{{ $p->id_prodi }}" {{ old('id_prodi') == $p->id_prodi ? 'selected' : '' }}>
+                            <option value="{{ $p->id }}" {{ old('id_prodi') == $p->id ? 'selected' : '' }}>
                                 {{ $p->nama_prodi }}
                             </option>
                         @endforeach
@@ -132,7 +132,7 @@
 
                 <div class="flex justify-between">
                     <a href="{{ route('tenaga-pendidik.index') }}"
-                        class="bg-gray-500 text-white px-4 py-2 rounded">Batal</a>
+                        class="bg-red-500 text-white px-4 py-2 rounded">Batal</a>
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
                 </div>
             </form>

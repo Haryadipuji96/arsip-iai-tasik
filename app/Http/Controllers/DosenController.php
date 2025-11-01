@@ -9,12 +9,24 @@ use Illuminate\Support\Str;
 
 class DosenController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $dosen = Dosen::with('prodi.fakultas')->paginate(20);
+        $query = Dosen::with('prodi.fakultas');
+
+        if ($search = $request->search) {
+            $query->where('nama', 'like', "%{$search}%")
+                ->orWhere('jabatan', 'like', "%{$search}%")
+                ->orWhereHas('prodi', function ($q) use ($search) {
+                    $q->where('nama_prodi', 'like', "%{$search}%");
+                });
+        }
+
+        $dosen = $query->paginate(20); // <-- gunakan $query hasil filter
         $prodi = Prodi::with('fakultas')->get();
+
         return view('page.dosen.index', compact('dosen', 'prodi'));
     }
+
 
     public function create()
     {
@@ -112,5 +124,21 @@ class DosenController extends Controller
 
         $dosen->delete();
         return redirect()->route('dosen.index')->with('success', 'Data dosen berhasil dihapus.');
+    }
+
+    public function deleteSelected(Request $request)
+    {
+        $ids = $request->selected_dosen;
+        if ($ids) {
+            $dosens = Dosen::whereIn('id', $ids)->get();
+            foreach ($dosens as $d) {
+                if ($d->file_dokumen && file_exists(public_path('storage/dokumen_dosen/' . $d->file_dokumen))) {
+                    unlink(public_path('storage/dokumen_dosen/' . $d->file_dokumen));
+                }
+            }
+            Dosen::whereIn('id', $ids)->delete();
+        }
+
+        return redirect()->route('dosen.index')->with('success', 'Data dosen terpilih berhasil dihapus.');
     }
 }
