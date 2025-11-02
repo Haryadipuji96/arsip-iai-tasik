@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserLogin;
-use Illuminate\Http\Request;
 
 class UserLoginController extends Controller
 {

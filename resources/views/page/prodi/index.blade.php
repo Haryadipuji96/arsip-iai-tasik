@@ -53,8 +53,8 @@
         </div>
 
         <div class="table-wrapper border border-gray-200 rounded-lg">
-            <table class="w-full border text-sm">
-                <thead class="bg-gray-600 text-white">
+            <table class="w-full border text-sm bg-white">
+                <thead class="bg-blue-500 text-white">
                     <tr>
                         <th class="border px-3 py-2 text-left">No</th>
                         <th class="border px-3 py-2 text-left">Nama Prodi</th>
@@ -101,7 +101,7 @@
                                     </form>
 
                                     <!-- Modal Edit -->
-                                    <div x-show="openModal"
+                                    <div x-show="openModal" x-cloak
                                         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                                         <div @click.away="openModal = false"
                                             class="bg-white rounded-lg w-full max-w-md p-6">

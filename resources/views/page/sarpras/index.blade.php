@@ -91,8 +91,8 @@
         </button>
 
         <div class="table-wrapper border border-gray-200 rounded-lg">
-            <table class="w-full border text-sm">
-                <thead class="bg-gray-600 text-white">
+            <table class="w-full border text-sm bg-white">
+                <thead class="bg-blue-500 text-white">
                     <tr>
                         <th class="px-4 py-2 border text-center w-12" rowspan="2">
                             <input type="checkbox" id="select-all">
@@ -171,7 +171,7 @@
                                 </div>
 
                                 {{-- Modal Edit (Landscape Style) --}}
-                                <div x-show="openModal"
+                                <div x-show="openModal" x-cloak
                                     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                                     <div @click.away="openModal = false"
                                         class="bg-white rounded-lg w-full max-w-5xl p-6 shadow-lg overflow-y-auto max-h-[90vh]">
@@ -304,21 +304,29 @@
                                                             value="{{ $s->lokasi_lain }}">
                                                     </div>
 
-                                                    {{-- File Dokumen --}}
-                                                    <div class="mb-4 text-start">
-                                                        <label class="block text-sm font-medium mb-1 ">File
-                                                            Dokumen</label>
+                                                    {{-- 🔹 File Dokumen Saat Ini --}}
+                                                    <div
+                                                        class="grid w-full max-w-xs items-start gap-1.5 mb-4 text-start">
+                                                        <label class="text-sm text-gray-400 font-medium leading-none">
+                                                            File Dokumen Saat Ini
+                                                        </label>
+
                                                         @if ($s->file_dokumen)
-                                                            <p class="text-xs mb-1">
-                                                                File saat ini:
-                                                                <a href="{{ asset('storage/sarpras/' . $s->file_dokumen) }}"
-                                                                    target="_blank"
-                                                                    class="text-blue-600 underline">{{ $s->file_dokumen }}</a>
+                                                            <a href="{{ asset('dokumen_sarpras/' . $s->file_dokumen) }}"
+                                                                target="_blank" class="text-blue-600 hover:underline">
+                                                                {{ $s->file_dokumen }}
+                                                            </a>
+
+                                                            <p class="text-gray-500 text-xs mt-1">
+                                                                Upload file baru untuk mengganti yang lama.
                                                             </p>
+                                                        @else
+                                                            <p class="text-gray-500 italic text-sm">Belum ada file.</p>
                                                         @endif
-                                                        <input type="file" name="file_dokumen"
-                                                            class="w-full border rounded px-3 py-2"
-                                                            accept=".pdf,.jpg,.png">
+
+                                                        <input type="file" name="file_dokumen" id="file_dokumen"
+                                                            class="flex w-full rounded-md border border-blue-300 bg-white text-sm text-gray-400 file:border-0 file:bg-blue-600 file:text-white file:text-sm file:font-medium"
+                                                            accept=".pdf,.doc,.docx,.jpg,.png" />
                                                     </div>
 
                                                     {{-- Keterangan --}}
@@ -333,7 +341,7 @@
                                             {{-- Tombol --}}
                                             <div class="flex justify-end gap-3 border-t pt-4 mt-4">
                                                 <button type="button" @click="openModal = false"
-                                                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</button>
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Batal</button>
                                                 <button type="submit"
                                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Update</button>
                                             </div>

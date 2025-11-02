@@ -148,7 +148,7 @@
                                         <td class="py-3 px-4 font-medium text-gray-700 bg-gray-50">File Dokumen</td>
                                         <td class="py-3 px-4">
                                             @if ($sarpras->file_dokumen)
-                                                <a href="{{ asset('storage/sarpras/' . $sarpras->file_dokumen) }}"
+                                                <a href="{{ asset('dokumen_sarpras/' . $sarpras->file_dokumen) }}"
                                                     target="_blank"
                                                     class="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium hover:bg-green-200 transition-colors">
                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"

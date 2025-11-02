@@ -93,8 +93,8 @@
 
         <!-- Card Table -->
         <div class="table-wrapper border border-gray-200 rounded-lg">
-            <table class="w-full border text-sm">
-                <thead class="bg-gray-600 text-white">
+            <table class="w-full border text-sm bg-white">
+                <thead class="bg-blue-500 text-white">
                     <tr>
                         <th class="px-4 py-2 border text-center w-12" rowspan="2">
                             <input type="checkbox" id="select-all">
@@ -128,7 +128,7 @@
                                 <input type="checkbox" class="select-item" name="selected_dosen[]"
                                     value="{{ $t->id }}">
                             </td>
-                            <td class="border px-4 py-2 text-center font-medium">{{ $no + 1 }}</td>
+                           <td class="border px-3 py-2 text-center">{{ $no + $tenaga->firstItem() }}</td>
                             <td class="border px-4 py-2">{!! highlight($t->nama_tendik, request('search')) !!}</td>
                             <td class="border px-4 py-2">{!! highlight($t->prodi->nama_prodi ?? '-', request('search')) !!}</td>
                             <td class="border px-4 py-2">{!! highlight($t->jabatan, request('search')) !!}</td>
@@ -282,16 +282,29 @@
                                                             class="border p-2 rounded w-full">
                                                     </div>
 
-                                                    <div>
-                                                        <label class="block font-medium mb-1 text-start">File (Foto /
-                                                            PDF)</label>
-                                                        <input type="file" name="file"
-                                                            class="border p-2 rounded w-full">
-                                                        @if ($t->file_url)
-                                                            <a href="{{ $t->file_url }}" target="_blank"
-                                                                class="text-blue-500 underline mt-1 block text-start">File
-                                                                Saat Ini</a>
+                                                    {{-- 🔹 File Dokumen Saat Ini --}}
+                                                    <div
+                                                        class="grid w-full max-w-xs items-start gap-1.5 mb-4 text-start">
+                                                        <label class="text-sm text-gray-400 font-medium leading-none">
+                                                            File Dokumen Saat Ini
+                                                        </label>
+
+                                                        @if ($t->file)
+                                                            <a href="{{ asset('dokumen_tendik/' . $t->file) }}"
+                                                                target="_blank" class="text-blue-600 hover:underline">
+                                                                {{ $t->file }}
+                                                            </a>
+
+                                                            <p class="text-gray-500 text-xs mt-1">
+                                                                Upload file baru untuk mengganti yang lama.
+                                                            </p>
+                                                        @else
+                                                            <p class="text-gray-500 italic text-sm">Belum ada file.</p>
                                                         @endif
+
+                                                        <input type="file" name="file" id="file"
+                                                            class="flex w-full rounded-md border border-blue-300 bg-white text-sm text-gray-400 file:border-0 file:bg-blue-600 file:text-white file:text-sm file:font-medium"
+                                                            accept=".pdf,.doc,.docx,.jpg,.png" />
                                                     </div>
                                                 </div>
                                             </div>

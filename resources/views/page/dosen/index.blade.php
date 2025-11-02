@@ -93,8 +93,8 @@
 
 
         <div class="table-wrapper border border-gray-200 rounded-lg">
-            <table class="w-full border text-sm">
-                <thead class="bg-gray-600 text-white">
+            <table class="w-full border text-sm bg-white">
+                <thead class="bg-blue-500 text-white">
                     <tr>
                         <th class="px-4 py-2 border text-center w-12" rowspan="2">
                             <input type="checkbox" id="select-all">
@@ -156,7 +156,7 @@
                             <td class="border px-4 py-2 text-center">{{ $d->masa_kerja_golongan_bulan ?? 0 }}</td>
                             <td class="border px-4 py-2 text-center">
                                 @if ($d->file_dokumen)
-                                    <a href="{{ asset('storage/dokumen_dosen/' . $d->file_dokumen) }}" target="_blank"
+                                    <a href="{{ asset('dokumen_dosen/' . $d->file_dokumen) }}" target="_blank"
                                         class="inline-flex items-center text-blue-600 hover:text-blue-800 underline">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -333,29 +333,29 @@
                                                 </div>
                                             </div>
 
-                                            <!-- File Dokumen -->
-                                            <div class="mb-4">
-                                                <label class="block font-medium mb-1 text-start">File Dokumen Saat
-                                                    Ini</label>
-                                                @if ($d->file_dokumen)
-                                                    <div class="flex items-center space-x-3">
-                                                        <a href="{{ asset('storage/dokumen_dosen/' . $d->file_dokumen) }}"
-                                                            target="_blank" class="text-blue-600 underline">Lihat
-                                                            Dokumen</a>
-                                                        <span class="text-gray-500 text-sm">(akan diganti jika upload
-                                                            baru)</span>
-                                                    </div>
-                                                @else
-                                                    <p class="text-gray-500 italic">Belum ada file.</p>
-                                                @endif
-                                            </div>
 
-                                            <div class="mb-4">
-                                                <label class="block font-medium mb-1 text-start">Upload File Dokumen
-                                                    Baru
-                                                    (opsional)</label>
-                                                <input type="file" name="file_dokumen"
-                                                    class="w-full border rounded px-3 py-2">
+                                            {{-- 🔹 File Dokumen Saat Ini --}}
+                                            <div class="grid w-full max-w-xs items-start gap-1.5 mb-4 text-start">
+                                                <label class="text-sm text-gray-400 font-medium leading-none">
+                                                    File Dokumen Saat Ini
+                                                </label>
+
+                                                @if ($d->file_dokumen)
+                                                    <a href="{{ asset('dokumen_dosen/' . $d->file_dokumen) }}"
+                                                        target="_blank" class="text-blue-600 hover:underline">
+                                                        {{ $d->file_dokumen }}
+                                                    </a>
+
+                                                    <p class="text-gray-500 text-xs mt-1">
+                                                        Upload file baru untuk mengganti yang lama.
+                                                    </p>
+                                                @else
+                                                    <p class="text-gray-500 italic text-sm">Belum ada file.</p>
+                                                @endif
+
+                                                <input type="file" name="file_dokumen" id="file_dokumen"
+                                                    class="flex w-full rounded-md border border-blue-300 bg-white text-sm text-gray-400 file:border-0 file:bg-blue-600 file:text-white file:text-sm file:font-medium"
+                                                    accept=".pdf,.doc,.docx,.jpg,.png" />
                                             </div>
 
                                             <div class="flex justify-end space-x-2">

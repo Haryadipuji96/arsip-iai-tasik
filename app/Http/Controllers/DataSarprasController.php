@@ -23,7 +23,7 @@ class DataSarprasController extends Controller
         }
 
         // Ambil data paginasi
-        $sarpras = $query->paginate(20);
+        $sarpras = $query->paginate(15);
 
         // Ambil semua data prodi untuk dropdown
         $prodi = Prodi::with('fakultas')->get();
@@ -56,16 +56,20 @@ class DataSarprasController extends Controller
             'lokasi_lain' => 'nullable|string|max:255',
         ]);
 
+        $data = $validated;
+
         if ($request->hasFile('file_dokumen')) {
             $file = $request->file('file_dokumen');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/sarpras', $filename);
-            $validated['file_dokumen'] = $filename;
+            $filename = now()->format('YmdHis') . '-Sarpras.' . $file->getClientOriginalExtension();
+            $file->move(public_path('dokumen_sarpras'), $filename);
+            $data['file_dokumen'] = $filename;
         }
 
-        DataSarpras::create($validated);
+        DataSarpras::create($data);
+
         return redirect()->route('sarpras.index')->with('success', 'Data sarpras berhasil ditambahkan.');
     }
+
 
 
     public function edit($id)
@@ -93,20 +97,25 @@ class DataSarprasController extends Controller
             'lokasi_lain' => 'nullable|string|max:255',
         ]);
 
+        $data = $validated;
+
         if ($request->hasFile('file_dokumen')) {
-            if ($sarpras->file_dokumen) {
-                Storage::delete('public/sarpras/' . $sarpras->file_dokumen);
+            $oldFile = $sarpras->file_dokumen;
+            if ($oldFile && file_exists(public_path('dokumen_sarpras/' . $oldFile))) {
+                unlink(public_path('dokumen_sarpras/' . $oldFile));
             }
+
             $file = $request->file('file_dokumen');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/sarpras', $filename);
-            $validated['file_dokumen'] = $filename;
+            $filename = now()->format('YmdHis') . '-Sarpras.' . $file->getClientOriginalExtension();
+            $file->move(public_path('dokumen_sarpras'), $filename);
+            $data['file_dokumen'] = $filename;
         }
 
-        $sarpras->update($validated);
+        $sarpras->update($data);
 
         return redirect()->route('sarpras.index')->with('success', 'Data sarpras berhasil diperbarui.');
     }
+
 
     public function show($id)
     {

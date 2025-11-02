@@ -1,140 +1,204 @@
-<x-app-layout>
-    <div class="py-8 px-6 max-w-3xl mx-auto">
-        <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-3xl border border-gray-100">
-            <!-- Header -->
-            <div class="flex items-center justify-between mb-6 border-b pb-4">
-                <div class="flex items-center space-x-3">
-                    <div class="bg-green-100 text-blue-600 p-2 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Tenaga Pendidik</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header/Navbar -->
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 flex items-center">
+                            <i class="fas fa-chalkboard-teacher text-blue-600 text-xl mr-2"></i>
+                            <span class="font-semibold text-xl text-gray-800">Sistem Akademik</span>
+                        </div>
                     </div>
-                    <h1 class="text-2xl font-semibold text-gray-800">Tambah Tenaga Pendidik</h1>
+                    <div class="flex items-center">
+                        <div class="ml-3 relative">
+                            <div class="flex items-center space-x-4">
+                                <a href="#" class="text-gray-600 hover:text-gray-900">
+                                    <i class="fas fa-bell"></i>
+                                </a>
+                                <div class="flex items-center">
+                                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+                                        U
+                                    </div>
+                                    <span class="ml-2 text-gray-700 hidden sm:block">User</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <a href="{{ route('tenaga-pendidik.index') }}"
-                    class="text-sm text-gray-600 hover:text-gray-800 transition flex items-center space-x-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span>Kembali</span>
-                </a>
             </div>
+        </header>
 
-            @if ($errors->any())
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
-                    <ul class="list-disc pl-5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+        <!-- Main Content -->
+        <div class="py-6">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white shadow-xl rounded-2xl p-4 sm:p-6 md:p-8 w-full border border-gray-100">
+                    <!-- Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 pb-4 border-b">
+                        <div class="flex items-center space-x-3 mb-3 sm:mb-0">
+                            <div class="bg-green-100 text-blue-600 p-2 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </div>
+                            <h1 class="text-xl sm:text-2xl font-semibold text-gray-800">Tambah Tenaga Pendidik</h1>
+                        </div>
+                        <a href="{{ route('tenaga-pendidik.index') }}"
+                            class="text-sm text-gray-600 hover:text-gray-800 transition flex items-center space-x-1 self-start sm:self-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span>Kembali</span>
+                        </a>
+                    </div>
+
+                    @if ($errors->any())
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+                            <ul class="list-disc pl-5 space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('tenaga-pendidik.store') }}" method="POST" enctype="multipart/form-data"
+                        class="space-y-4">
+                        @csrf
+
+                        <!-- Prodi -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Program Studi</label>
+                            <select name="id_prodi" class="border p-2 rounded w-full text-sm sm:text-base">
+                                <option value="">-- Pilih Prodi --</option>
+                                @foreach ($prodi as $p)
+                                    <option value="{{ $p->id }}" {{ old('id_prodi') == $p->id ? 'selected' : '' }}>
+                                        {{ $p->nama_prodi }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Nama -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Nama Tenaga Pendidik</label>
+                            <input type="text" name="nama_tendik" value="{{ old('nama_tendik') }}"
+                                class="border p-2 rounded w-full text-sm sm:text-base" placeholder="Masukkan nama lengkap">
+                        </div>
+
+                        <!-- NIP -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">NIP</label>
+                            <input type="text" name="nip" value="{{ old('nip') }}" class="border p-2 rounded w-full text-sm sm:text-base"
+                                placeholder="Masukkan NIP">
+                        </div>
+
+                        <!-- Jabatan -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Jabatan</label>
+                            <input type="text" name="jabatan" value="{{ old('jabatan') }}" class="border p-2 rounded w-full text-sm sm:text-base"
+                                placeholder="Masukkan jabatan">
+                        </div>
+
+                        <!-- Status Kepegawaian -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Status Kepegawaian</label>
+                            <select name="status_kepegawaian" class="border p-2 rounded w-full text-sm sm:text-base">
+                                <option value="">-- Pilih Status --</option>
+                                @foreach (['PNS', 'Honorer', 'Kontrak'] as $status)
+                                    <option value="{{ $status }}"
+                                        {{ old('status_kepegawaian') == $status ? 'selected' : '' }}>
+                                        {{ $status }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Pendidikan Terakhir -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Pendidikan Terakhir</label>
+                            <input type="text" name="pendidikan_terakhir" value="{{ old('pendidikan_terakhir') }}"
+                                class="border p-2 rounded w-full text-sm sm:text-base" placeholder="Contoh: S1, S2, dll">
+                        </div>
+
+                        <!-- Jenis Kelamin -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Jenis Kelamin</label>
+                            <select name="jenis_kelamin" class="border p-2 rounded w-full text-sm sm:text-base">
+                                <option value="">-- Pilih Jenis Kelamin --</option>
+                                @foreach (['laki-laki', 'perempuan'] as $jk)
+                                    <option value="{{ $jk }}" {{ old('jenis_kelamin') == $jk ? 'selected' : '' }}>
+                                        {{ ucfirst($jk) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- No HP -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">No HP</label>
+                            <input type="text" name="no_hp" value="{{ old('no_hp') }}" class="border p-2 rounded w-full text-sm sm:text-base"
+                                placeholder="Masukkan nomor handphone">
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Email</label>
+                            <input type="email" name="email" value="{{ old('email') }}" class="border p-2 rounded w-full text-sm sm:text-base"
+                                placeholder="Masukkan alamat email">
+                        </div>
+
+                        <!-- Alamat -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Alamat</label>
+                            <textarea name="alamat" class="border p-2 rounded w-full text-sm sm:text-base" rows="3"
+                                placeholder="Masukkan alamat lengkap">{{ old('alamat') }}</textarea>
+                        </div>
+
+                        <!-- Keterangan -->
+                        <div>
+                            <label class="block font-medium mb-1 text-sm sm:text-base">Keterangan</label>
+                            <textarea name="keterangan" class="border p-2 rounded w-full text-sm sm:text-base" rows="2"
+                                placeholder="Tambahkan keterangan tambahan">{{ old('keterangan') }}</textarea>
+                        </div>
+
+                        {{-- 🔹 Upload File Dokumen --}}
+                        <div class="mb-4">
+                            <label for="file" class="block font-medium mb-1 text-sm sm:text-base">
+                                Upload File Dokumen
+                            </label>
+                            <div class="flex flex-col w-full">
+                                <input type="file" name="file" id="file"
+                                    class="flex w-full rounded-md border border-blue-300 bg-white text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-blue-600 file:text-white file:text-sm file:font-medium"
+                                    accept=".pdf,.doc,.docx,.jpg,.png" />
+                                <p class="text-gray-500 text-xs mt-1">
+                                    Format diizinkan: <b>PDF, DOC, DOCX, JPG, PNG</b> | Maksimal <b>5MB</b>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-between space-y-2 sm:space-y-0 pt-4">
+                            <a href="{{ route('tenaga-pendidik.index') }}"
+                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-center transition">
+                                Batal
+                            </a>
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition">
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            @endif
-
-            <form action="{{ route('tenaga-pendidik.store') }}" method="POST" enctype="multipart/form-data"
-                class="space-y-4">
-                @csrf
-
-                <!-- Prodi -->
-                <div>
-                    <label class="block font-medium mb-1">Program Studi</label>
-                    <select name="id_prodi" class="border p-2 rounded w-full">
-                        <option value="">-- Pilih Prodi --</option>
-                        @foreach ($prodi as $p)
-                            <option value="{{ $p->id }}" {{ old('id_prodi') == $p->id ? 'selected' : '' }}>
-                                {{ $p->nama_prodi }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Nama -->
-                <div>
-                    <label class="block font-medium mb-1">Nama Tenaga Pendidik</label>
-                    <input type="text" name="nama_tendik" value="{{ old('nama_tendik') }}"
-                        class="border p-2 rounded w-full">
-                </div>
-
-                <!-- NIP -->
-                <div>
-                    <label class="block font-medium mb-1">NIP</label>
-                    <input type="text" name="nip" value="{{ old('nip') }}" class="border p-2 rounded w-full">
-                </div>
-
-                <!-- Jabatan -->
-                <div>
-                    <label class="block font-medium mb-1">Jabatan</label>
-                    <input type="text" name="jabatan" value="{{ old('jabatan') }}" class="border p-2 rounded w-full">
-                </div>
-
-                <!-- Status Kepegawaian -->
-                <div>
-                    <label class="block font-medium mb-1">Status Kepegawaian</label>
-                    <select name="status_kepegawaian" class="border p-2 rounded w-full">
-                        <option value="">-- Pilih Status --</option>
-                        @foreach (['PNS', 'Honorer', 'Kontrak'] as $status)
-                            <option value="{{ $status }}" {{ old('status_kepegawaian') == $status ? 'selected' : '' }}>
-                                {{ $status }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Pendidikan Terakhir -->
-                <div>
-                    <label class="block font-medium mb-1">Pendidikan Terakhir</label>
-                    <input type="text" name="pendidikan_terakhir" value="{{ old('pendidikan_terakhir') }}"
-                        class="border p-2 rounded w-full">
-                </div>
-
-                <!-- Jenis Kelamin -->
-                <div>
-                    <label class="block font-medium mb-1">Jenis Kelamin</label>
-                    <select name="jenis_kelamin" class="border p-2 rounded w-full">
-                        <option value="">-- Pilih Jenis Kelamin --</option>
-                        @foreach (['laki-laki', 'perempuan'] as $jk)
-                            <option value="{{ $jk }}" {{ old('jenis_kelamin') == $jk ? 'selected' : '' }}>
-                                {{ $jk }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- No HP -->
-                <div>
-                    <label class="block font-medium mb-1">No HP</label>
-                    <input type="text" name="no_hp" value="{{ old('no_hp') }}" class="border p-2 rounded w-full">
-                </div>
-
-                <!-- Email -->
-                <div>
-                    <label class="block font-medium mb-1">Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}" class="border p-2 rounded w-full">
-                </div>
-
-                <!-- Alamat -->
-                <div>
-                    <label class="block font-medium mb-1">Alamat</label>
-                    <textarea name="alamat" class="border p-2 rounded w-full">{{ old('alamat') }}</textarea>
-                </div>
-
-                <!-- Keterangan -->
-                <div>
-                    <label class="block font-medium mb-1">Keterangan</label>
-                    <textarea name="keterangan" class="border p-2 rounded w-full">{{ old('keterangan') }}</textarea>
-                </div>
-
-                <!-- File -->
-                <div>
-                    <label class="block font-medium mb-1">File (Foto / PDF)</label>
-                    <input type="file" name="file" class="border p-2 rounded w-full">
-                </div>
-
-                <div class="flex justify-between">
-                    <a href="{{ route('tenaga-pendidik.index') }}"
-                        class="bg-red-500 text-white px-4 py-2 rounded">Batal</a>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
-                </div>
-            </form>
+            </div>
         </div>
-</x-app-layout>
+    </div>
+</body>
+</html>

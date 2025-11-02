@@ -84,8 +84,8 @@
         <x-search-bar route="users.index" placeholder="Cari nama pengguna..." />
 
         <div class="table-wrapper border border-gray-200 rounded-lg">
-            <table class="w-full border text-sm">
-                <thead class="bg-gray-600 text-white">
+            <table class="w-full border text-sm bg-white">
+                <thead class="bg-blue-500 text-white">
                     <tr>
                         <th class="border px-3 py-2 text-left">No</th>
                         <th class="border px-3 py-2 text-left">Nama</th>

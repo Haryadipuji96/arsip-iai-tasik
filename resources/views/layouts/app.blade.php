@@ -10,7 +10,7 @@
     <title>{{ config('app.name', 'SIPANDA') }}</title>
 
     <!-- Fonts -->
-<link rel="icon" href="{{ asset('images/Logo-IAIT.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('images/Logo-IAIT.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -52,6 +52,10 @@
             background-color: rgba(255, 255, 255, 0.6);
             /* putih 50% transparan */
             z-index: -1;
+        }
+
+        [x-cloak] {
+            display: none !important;
         }
     </style>
 

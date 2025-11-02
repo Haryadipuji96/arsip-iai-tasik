@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\TenagaPendidik;
 use App\Models\Prodi;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class TenagaPendidikController extends Controller
 {
     public function index(Request $request)
     {
-        // Mulai query dengan relasi prodi
         $query = TenagaPendidik::with('prodi')->latest();
 
         if ($search = $request->search) {
@@ -22,16 +20,11 @@ class TenagaPendidikController extends Controller
                 });
         }
 
-        // Ambil data paginasi
-        $tenaga = $query->paginate(20);
-
-        // Ambil semua data prodi untuk dropdown
+        $tenaga = $query->paginate(15);
         $prodi = Prodi::with('fakultas')->get();
 
         return view('page.tenaga_pendidik.index', compact('tenaga', 'prodi'));
     }
-
-
 
     public function create()
     {
@@ -44,7 +37,7 @@ class TenagaPendidikController extends Controller
         $request->validate([
             'id_prodi' => 'required|exists:prodi,id',
             'nama_tendik' => 'required|string|max:255',
-            'nip' => 'nullable|string|max:50',
+            'nip' => 'nullable|string|max:50|unique:tenaga_pendidik,nip',
             'jabatan' => 'nullable|string|max:100',
             'status_kepegawaian' => 'required|in:PNS,Honorer,Kontrak',
             'pendidikan_terakhir' => 'nullable|string|max:100',
@@ -53,13 +46,16 @@ class TenagaPendidikController extends Controller
             'email' => 'nullable|email|unique:tenaga_pendidik,email',
             'alamat' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string|max:255',
-            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
+            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->except('file');
 
         if ($request->hasFile('file')) {
-            $data['file'] = $request->file('file')->store('tenaga_pendidik', 'public');
+            $file = $request->file('file');
+            $filename = now()->format('YmdHis') . '-Tendik.' . $file->getClientOriginalExtension();
+            $file->move(public_path('dokumen_tendik'), $filename);
+            $data['file'] = $filename;
         }
 
         TenagaPendidik::create($data);
@@ -67,49 +63,52 @@ class TenagaPendidikController extends Controller
         return redirect()->route('tenaga-pendidik.index')->with('success', 'Data berhasil ditambahkan.');
     }
 
-    public function edit(TenagaPendidik $tenagaPendidik)
-    {
-        //
-    }
-
     public function update(Request $request, TenagaPendidik $tenagaPendidik)
     {
         $request->validate([
             'id_prodi' => 'required|exists:prodi,id',
             'nama_tendik' => 'required|string|max:255',
-            'nip' => 'nullable|string|max:50|unique:tenaga_pendidik,nip,' . $tenagaPendidik->id . ',id',
+            'nip' => 'nullable|string|max:50|unique:tenaga_pendidik,nip,' . $tenagaPendidik->id,
             'jabatan' => 'nullable|string|max:100',
             'status_kepegawaian' => 'required|in:PNS,Honorer,Kontrak',
             'pendidikan_terakhir' => 'nullable|string|max:100',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
-            'no_hp' => 'nullable|string|max:20|unique:tenaga_pendidik,no_hp,' . $tenagaPendidik->id . ',id',
-            'email' => 'nullable|email|unique:tenaga_pendidik,email,' . $tenagaPendidik->id . ',id',
+            'no_hp' => 'nullable|string|max:20|unique:tenaga_pendidik,no_hp,' . $tenagaPendidik->id,
+            'email' => 'nullable|email|unique:tenaga_pendidik,email,' . $tenagaPendidik->id,
             'alamat' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string|max:255',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
+        $data = $request->except('file');
 
-        $data = $request->all();
-
+        // 🔹 Update file jika diupload
         if ($request->hasFile('file')) {
-            if ($tenagaPendidik->file) {
-                Storage::disk('public')->delete($tenagaPendidik->file);
+            // Hapus file lama jika ada
+            if ($tenagaPendidik->file && file_exists(public_path('dokumen_tendik/' . $tenagaPendidik->file))) {
+                unlink(public_path('dokumen_tendik/' . $tenagaPendidik->file));
             }
-            $data['file'] = $request->file('file')->store('tenaga_pendidik', 'public');
+
+            // Upload file baru
+            $file = $request->file('file');
+            $filename = now()->format('YmdHis') . '-Tendik.' . $file->getClientOriginalExtension();
+            $file->move(public_path('dokumen_tendik'), $filename);
+            $data['file'] = $filename;
         }
 
         $tenagaPendidik->update($data);
 
-        return redirect()->route('tenaga-pendidik.index')->with('success', 'Data berhasil diupdate.');
+        return redirect()->route('tenaga-pendidik.index')->with('success', 'Data berhasil diperbarui.');
     }
 
     public function destroy(TenagaPendidik $tenagaPendidik)
     {
-        if ($tenagaPendidik->file) {
-            Storage::disk('public')->delete($tenagaPendidik->file);
+        if ($tenagaPendidik->file && file_exists(public_path('dokumen_tendik/' . $tenagaPendidik->file))) {
+            unlink(public_path('dokumen_tendik/' . $tenagaPendidik->file));
         }
+
         $tenagaPendidik->delete();
+
         return redirect()->route('tenaga-pendidik.index')->with('success', 'Data berhasil dihapus.');
     }
 
@@ -120,17 +119,20 @@ class TenagaPendidikController extends Controller
 
     public function deleteSelected(Request $request)
     {
-        $ids = $request->selected_dosen;
+        $ids = $request->selected_tendik;
+
         if ($ids) {
-            $dosens = TenagaPendidik::whereIn('id', $ids)->get();
-            foreach ($dosens as $d) {
-                if ($d->file_dokumen && file_exists(public_path('storage/dokumen_dosen/' . $d->file_dokumen))) {
-                    unlink(public_path('storage/dokumen_dosen/' . $d->file_dokumen));
+            $items = TenagaPendidik::whereIn('id', $ids)->get();
+
+            foreach ($items as $t) {
+                if ($t->file && file_exists(public_path('dokumen_tendik/' . $t->file))) {
+                    unlink(public_path('dokumen_tendik/' . $t->file));
                 }
             }
+
             TenagaPendidik::whereIn('id', $ids)->delete();
         }
 
-        return redirect()->route('dosen.index')->with('success', 'Data dosen terpilih berhasil dihapus.');
+        return redirect()->route('tenaga-pendidik.index')->with('success', 'Data tenaga pendidik terpilih berhasil dihapus.');
     }
 }

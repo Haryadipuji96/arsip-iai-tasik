@@ -6,7 +6,7 @@ use App\Models\Arsip;
 use App\Models\KategoriArsip;
 use App\Models\Prodi;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+
 
 class ArsipController extends Controller
 {
@@ -24,7 +24,7 @@ class ArsipController extends Controller
                 });
         }
 
-        $arsip = $query->paginate(20);
+        $arsip = $query->paginate(15);
         $kategori = KategoriArsip::all();
         $prodi = Prodi::with('fakultas')->get();
 
@@ -67,16 +67,18 @@ class ArsipController extends Controller
             'keterangan' => 'nullable|string|max:500',
         ]);
 
-        $data = $request->all();
+        $data = $request->except('file_dokumen');
 
+        // Jika ada file yang di-upload
         if ($request->hasFile('file_dokumen')) {
             $file = $request->file('file_dokumen');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/arsip', $filename);
+            $filename = now()->format('YmdHis') . '-Arsip.' . $file->getClientOriginalExtension();
+            $file->move(public_path('dokumen_arsip'), $filename);
             $data['file_dokumen'] = $filename;
         }
 
         Arsip::create($data);
+
         return redirect()->route('arsip.index')->with('success', 'Data arsip berhasil ditambahkan.');
     }
 
@@ -96,19 +98,34 @@ class ArsipController extends Controller
             'keterangan' => 'nullable|string|max:500',
         ]);
 
-        $data = $request->all();
+        // Ambil semua data kecuali file
+        $data = $request->except('file_dokumen');
 
+        // Simpan nama file lama
+        $oldFile = $arsip->file_dokumen;
+
+        // Jika ada file baru
         if ($request->hasFile('file_dokumen')) {
-            if ($arsip->file_dokumen) {
-                Storage::delete('public/arsip/' . $arsip->file_dokumen);
+            // Hapus file lama jika ada
+            if ($oldFile && file_exists(public_path('dokumen_arsip/' . $oldFile))) {
+                unlink(public_path('dokumen_arsip/' . $oldFile));
             }
+
+            // Simpan file baru
             $file = $request->file('file_dokumen');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/arsip', $filename);
+            $filename = now()->format('YmdHis') . '-Arsip.' . $file->getClientOriginalExtension();
+            $file->move(public_path('dokumen_arsip'), $filename);
+
+            // Ganti nama file di data
             $data['file_dokumen'] = $filename;
+        } else {
+            // Kalau tidak upload file baru, pakai file lama
+            $data['file_dokumen'] = $oldFile;
         }
 
+        // Update data ke database
         $arsip->update($data);
+
         return redirect()->route('arsip.index')->with('success', 'Data arsip berhasil diperbarui.');
     }
 

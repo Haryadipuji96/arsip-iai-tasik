@@ -5,7 +5,7 @@
         <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div>
                 <h1 id="greeting" class="text-3xl font-extrabold text-blue-900 flex items-center gap-4">
-                    Selamat Datang, {{ Auth::user()->name }} 👋
+                    Selamat Datang, {{ Auth::user()->name }}
                     <span id="digitalClock" class="ml-4 text-lg font-mono text-gray-500"></span>
                 </h1>
                 <p id="dailyQuote" class="text-gray-500 mt-1 text-lg">Ringkasan data terbaru di Bank Data Arsip Kampus</p>
@@ -15,7 +15,8 @@
 
         <!-- Cards Ringkasan -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl shadow-lg p-6 flex items-center justify-between transform hover:scale-105 transition-transform duration-300">
+            <div
+                class="bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl shadow-lg p-6 flex items-center justify-between transform hover:scale-105 transition-transform duration-300">
                 <div>
                     <h2 class="text-lg font-semibold">Total Dosen</h2>
                     <p class="text-3xl font-bold mt-2">{{ $totalDosen }}</p>
@@ -23,7 +24,8 @@
                 <i class="fas fa-chalkboard-teacher fa-3x opacity-80"></i>
             </div>
 
-            <div class="bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl shadow-lg p-6 flex items-center justify-between transform hover:scale-105 transition-transform duration-300">
+            <div
+                class="bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-xl shadow-lg p-6 flex items-center justify-between transform hover:scale-105 transition-transform duration-300">
                 <div>
                     <h2 class="text-lg font-semibold">Total Tenaga Pendidik</h2>
                     <p class="text-3xl font-bold mt-2">{{ $totalTendik }}</p>
@@ -31,7 +33,8 @@
                 <i class="fas fa-user-tie fa-3x opacity-80"></i>
             </div>
 
-            <div class="bg-gradient-to-r from-blue-400 to-blue-300 text-white rounded-xl shadow-lg p-6 flex items-center justify-between transform hover:scale-105 transition-transform duration-300">
+            <div
+                class="bg-gradient-to-r from-orange-400 to-amber-300 text-white rounded-xl shadow-lg p-6 flex items-center justify-between transform hover:scale-105 transition-transform duration-300">
                 <div>
                     <h2 class="text-lg font-semibold">Total Dokumen Arsip</h2>
                     <p class="text-3xl font-bold mt-2">{{ $totalArsip }}</p>
@@ -39,7 +42,8 @@
                 <i class="fas fa-file-alt fa-3x opacity-80"></i>
             </div>
 
-            <div class="bg-gradient-to-r from-blue-300 to-blue-200 text-white rounded-xl shadow-lg p-6 flex items-center justify-between transform hover:scale-105 transition-transform duration-300">
+            <div
+                class="bg-gradient-to-r from-indigo-500 to-purple-400 text-white rounded-xl shadow-lg p-6 flex items-center justify-between transform hover:scale-105 transition-transform duration-300">
                 <div>
                     <h2 class="text-lg font-semibold">Total Sarpras</h2>
                     <p class="text-3xl font-bold mt-2">{{ $totalSarpras }}</p>
@@ -63,81 +67,104 @@
     </div>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // ------------------ Greeting Dinamis ------------------
-        const greetingEl = document.getElementById('greeting');
-        const now = new Date();
-        const hour = now.getHours();
-        let greeting = "Selamat Datang";
-
-        if(hour >= 4 && hour < 12) greeting = "Selamat Pagi";
-        else if(hour >= 12 && hour < 15) greeting = "Selamat Siang";
-        else if(hour >= 15 && hour < 18) greeting = "Selamat Sore";
-        else greeting = "Selamat Malam";
-
-        greetingEl.childNodes[0].textContent = `${greeting}, {{ Auth::user()->name }} 👋`;
-
-        // ------------------ Quote Harian ------------------
-        const quotes = [
-            "“Pendidikan adalah senjata paling ampuh untuk mengubah dunia.” – Nelson Mandela",
-            "“Belajar tanpa berpikir itu sia-sia, berpikir tanpa belajar itu berbahaya.” – Confucius",
-            "“Kesuksesan adalah hasil dari persiapan, kerja keras, dan belajar dari kegagalan.” – Colin Powell",
-            "“Ilmu pengetahuan adalah harta yang paling berharga.” – Mahatma Gandhi",
-            "“Orang yang berhenti belajar akan menjadi tua, baik umur 20 atau 80.” – Henry Ford",
-            "“Kampus bukan hanya tempat belajar, tapi tempat menginspirasi perubahan.”",
-            "“Setiap hari adalah kesempatan baru untuk belajar sesuatu yang baru.”"
-        ];
-        const today = new Date();
-        const dayIndex = today.getDate() % quotes.length;
-        document.getElementById('dailyQuote').innerText = quotes[dayIndex];
-
-        // ------------------ Tanggal & Jam Realtime ------------------
-        function updateDateTime() {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // ------------------ Greeting Dinamis ------------------
+            const greetingEl = document.getElementById('greeting');
             const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('id-ID', options);
-            const timeString = now.toLocaleTimeString('id-ID');
-            document.getElementById('currentDateTime').innerText = `${dateString} | ${timeString}`;
+            const hour = now.getHours();
+            let greeting = "Selamat Datang";
 
-            // Digital clock di samping greeting
-            document.getElementById('digitalClock').innerText = timeString;
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
+            if (hour >= 4 && hour < 12) greeting = "Selamat Pagi";
+            else if (hour >= 12 && hour < 15) greeting = "Selamat Siang";
+            else if (hour >= 15 && hour < 18) greeting = "Selamat Sore";
+            else greeting = "Selamat Malam";
 
-        // ------------------ Chart Dosen Per Prodi ------------------
-        const dosenPerProdi = @json($dosenPerProdi);
-        const arsipPerBulan = @json($arsipPerBulan);
+            greetingEl.childNodes[0].textContent = `${greeting}, {{ Auth::user()->name }} 👋`;
 
-        const dosenLabels = dosenPerProdi.map(d => d.prodi);
-        const dosenData = dosenPerProdi.map(d => d.total);
+            // ------------------ Quote Harian ------------------
+            const quotes = [
+                "“Pendidikan adalah senjata paling ampuh untuk mengubah dunia.” – Nelson Mandela",
+                "“Belajar tanpa berpikir itu sia-sia, berpikir tanpa belajar itu berbahaya.” – Confucius",
+                "“Kesuksesan adalah hasil dari persiapan, kerja keras, dan belajar dari kegagalan.” – Colin Powell",
+                "“Ilmu pengetahuan adalah harta yang paling berharga.” – Mahatma Gandhi",
+                "“Orang yang berhenti belajar akan menjadi tua, baik umur 20 atau 80.” – Henry Ford",
+                "“Kampus bukan hanya tempat belajar, tapi tempat menginspirasi perubahan.”",
+                "“Setiap hari adalah kesempatan baru untuk belajar sesuatu yang baru.”"
+            ];
+            const today = new Date();
+            const dayIndex = today.getDate() % quotes.length;
+            document.getElementById('dailyQuote').innerText = quotes[dayIndex];
 
-        new Chart(document.getElementById('chartDosenPerProdi'), {
-            type: 'bar',
-            data: { labels: dosenLabels, datasets: [{ label: 'Jumlah Dosen', data: dosenData, backgroundColor: 'rgba(37, 99, 235, 0.7)'}] },
-            options: { responsive: true }
-        });
+            // ------------------ Tanggal & Jam Realtime ------------------
+            function updateDateTime() {
+                const now = new Date();
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                const dateString = now.toLocaleDateString('id-ID', options);
+                const timeString = now.toLocaleTimeString('id-ID');
+                document.getElementById('currentDateTime').innerText = `${dateString} | ${timeString}`;
 
-        // ------------------ Chart Arsip Per Bulan ------------------
-        const arsipLabels = arsipPerBulan.map(a => 'Bulan ' + a.bulan);
-        const arsipData = arsipPerBulan.map(a => a.total);
+                // Digital clock di samping greeting
+                // document.getElementById('digitalClock').innerText = timeString;
+            }
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
 
-        new Chart(document.getElementById('chartArsipPerBulan'), {
-            type: 'line',
-            data: {
-                labels: arsipLabels,
-                datasets: [{
-                    label: 'Jumlah Dokumen',
-                    data: arsipData,
-                    borderColor: 'rgba(37, 99, 235, 0.9)',
-                    backgroundColor: 'rgba(37, 99, 235, 0.2)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: { responsive: true }
-        });
-    </script>
+            // ------------------ Chart Dosen Per Prodi ------------------
+            const dosenPerProdi = @json($dosenPerProdi);
+            const arsipPerBulan = @json($arsipPerBulan);
+
+            const dosenLabels = dosenPerProdi.map(d => d.prodi);
+            const dosenData = dosenPerProdi.map(d => d.total);
+
+            new Chart(document.getElementById('chartDosenPerProdi'), {
+                type: 'bar',
+                data: {
+                    labels: dosenLabels,
+                    datasets: [{
+                        label: 'Jumlah Dosen',
+                        data: dosenData,
+                        backgroundColor: [
+                            'rgba(236, 72, 153, 0.7)', // pink
+                            'rgba(168, 85, 247, 0.7)', // purple
+                            'rgba(251, 146, 60, 0.7)', // orange
+                            'rgba(59, 130, 246, 0.7)', // blue
+                            'rgba(34, 197, 94, 0.7)' // green
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+            // ------------------ Chart Arsip Per Bulan ------------------
+            const arsipLabels = arsipPerBulan.map(a => 'Bulan ' + a.bulan);
+            const arsipData = arsipPerBulan.map(a => a.total);
+
+            new Chart(document.getElementById('chartArsipPerBulan'), {
+                type: 'line',
+                data: {
+                    labels: arsipLabels,
+                    datasets: [{
+                        label: 'Jumlah Dokumen',
+                        data: arsipData,
+                        borderColor: 'rgba(236, 72, 153, 0.9)',
+                        backgroundColor: 'rgba(236, 72, 153, 0.15)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(236, 72, 153, 0.9)',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        </script>
     @endpush
 </x-app-layout>
