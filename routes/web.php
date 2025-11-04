@@ -59,7 +59,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('arsip', ArsipController::class);
     Route::resource('sarpras', DataSarprasController::class);
     Route::resource('tenaga-pendidik', TenagaPendidikController::class);
-    Route::get('/user-activity', [UserLoginController::class, 'index'])->name('userlogin.index');
 });
 
 require __DIR__ . '/auth.php';
